@@ -1,6 +1,6 @@
 // İşler Güçler: internet yokken de açılsın diye dosyaları önbellekte tutar.
 // Uygulamayı güncellediğinde aşağıdaki sürüm numarasını bir artır (v1 -> v2).
-const CACHE = "isler-gucler-v1";
+const CACHE = "isler-gucler-v2";
 const FILES = ["./", "index.html", "manifest.webmanifest", "apple-touch-icon.png", "icon-192.png", "icon-512.png"];
 
 self.addEventListener("install", e => {

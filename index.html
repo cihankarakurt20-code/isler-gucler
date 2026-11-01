@@ -7,8 +7,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="İşler Güçler">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="theme-color" content="#F5C8E7" id="themeColor">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#1D1621" id="themeColor">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="apple-touch-icon.png">
 <link rel="manifest" href="manifest.webmanifest">
@@ -254,6 +254,43 @@ textarea.field{min-height:84px;line-height:1.35}
 .pop{animation:pop .35s}
 @keyframes flyout{to{transform:translateX(30px);opacity:0}}
 .leaving{animation:flyout .3s forwards}
+
+/* ---------- koyu zemin ---------- */
+:root{--bg:#1D1621;--bg2:#2B2131;--fg:#F6EEF3;--fg2:#A897AC;--dim:#5F4E65;--line:#3A2E41}
+html,body{background:var(--bg);color:var(--fg)}
+#p-acil,#p-isler,#p-unutma,#p-fikir{background:var(--bg)}
+.dots i{background:var(--fg);opacity:.2} .dots i.on{opacity:1}
+.menu-btn svg{stroke:var(--fg)}
+.logo,#p-isler .logo,#p-unutma .logo,#p-fikir .logo{background:var(--bg2)}
+.title{color:var(--fg)} .title .w{color:var(--pink)} .title .g{color:var(--dim)} .title .o{color:var(--orange)}
+.sub{color:var(--fg2)} .today .sub{color:var(--fg)}
+.next{color:var(--fg)} .next small{color:var(--fg2)}
+.sq b{background:var(--fg)} .sq b.off{background:var(--line)}
+.bar{background:var(--bg2)}
+.bar .fill{background:var(--pink)}
+.bar .mid{background:repeating-linear-gradient(90deg,#9A6F90 0 3px,#6F4F69 3px 7px)}
+.bar .hatch{background:repeating-linear-gradient(90deg,rgba(255,255,255,.16) 0 2px,transparent 2px 9px)}
+.nums span{color:var(--fg2)}
+.sec{color:var(--fg)} .sec span,.sec button{color:var(--fg2)}
+.empty{border-color:var(--line)} .empty span{color:var(--fg2)}
+.chip{background:var(--bg2);color:var(--fg)} .chip.on{background:var(--fg);color:var(--bg)}
+.hint{color:var(--fg2)}
+.prog b{background:var(--fg)} .prog b.off{background:var(--line)}
+.frow{border-bottom-color:var(--line)}
+.ftime.none,.ftime .mm{color:var(--dim)}
+.ftext small{color:var(--fg2)}
+.fcheck{border-color:var(--fg)} .fcheck svg{stroke:var(--bg)}
+.frow.done .fcheck{background:var(--fg)}
+.frow.done .ftext{color:var(--dim)}
+.oldbox{background:#2E1E28}
+.feat::after{background:#CDBFC7}
+#nav{background:#110C14;box-shadow:0 0 0 1px var(--line)}
+#nav button.on{background:var(--fg);color:var(--bg)}
+#nav button[data-p="0"].on{background:var(--pink);color:var(--ink)}
+#fab{background:var(--pink);color:var(--ink);box-shadow:0 10px 24px rgba(0,0,0,.5),0 0 0 5px rgba(29,22,33,.75)}
+#fab.orange{background:var(--orange)}
+#toast{background:var(--fg);color:var(--ink)} #toast button{background:var(--ink);color:#fff}
+.card,.feat,.idea,#sheet{color:var(--ink)}
 </style>
 </head>
 <body>
@@ -532,7 +569,7 @@ function render(){ renderHub(); renderTasks(); renderForgets(); renderIdeas(); }
 
 /* ============ sayfalar ============ */
 const pager = $("#pager");
-const PAGE_BG = ["#F5C8E7", "#FFFFFF", "#FFFFFF", "#FFFFFF"];
+const PAGE_BG = ["#1D1621", "#1D1621", "#1D1621", "#1D1621"];
 let cur = 0;
 function setPage(i){
   cur = i;
