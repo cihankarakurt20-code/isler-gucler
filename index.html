@@ -2,13 +2,13 @@
 <html lang="tr">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
 <title>İşler Güçler</title>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="İşler Güçler">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="theme-color" content="#1D1621" id="themeColor">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#E9E7E3" id="themeColor">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="apple-touch-icon.png">
 <link rel="manifest" href="manifest.webmanifest">
@@ -42,9 +42,11 @@ input,textarea{font:inherit;color:inherit}
 .disp{font-family:var(--disp);text-transform:uppercase;font-weight:900;letter-spacing:.005em}
 
 /* ---------- pager ---------- */
-#pager{position:fixed;inset:0;display:flex;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch}
-#pager::-webkit-scrollbar{display:none}
-.page{flex:0 0 100%;width:100%;height:100%;overflow-y:auto;overflow-x:hidden;scroll-snap-align:start;scroll-snap-stop:always;padding:calc(var(--st) + 14px) 18px calc(var(--sb) + 150px);position:relative}
+html,body{width:100%;max-width:100%;overflow-x:hidden}
+#pager{position:fixed;inset:0;overflow:hidden;touch-action:pan-y}
+.page{position:absolute;inset:0;width:100%;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-y;padding:calc(var(--st) + 14px) 18px calc(var(--sb) + 150px);visibility:hidden;opacity:0;transition:opacity .18s ease}
+.page.active{visibility:visible;opacity:1;z-index:1}
+.chips{touch-action:pan-x pan-y;overscroll-behavior-x:contain}
 .page::-webkit-scrollbar{display:none}
 #p-acil{background:var(--pink)} #p-isler,#p-unutma,#p-fikir{background:var(--paper)}
 .inner{max-width:520px;margin:0 auto}
@@ -255,41 +257,54 @@ textarea.field{min-height:84px;line-height:1.35}
 @keyframes flyout{to{transform:translateX(30px);opacity:0}}
 .leaving{animation:flyout .3s forwards}
 
-/* ---------- koyu zemin ---------- */
-:root{--bg:#1D1621;--bg2:#2B2131;--fg:#F6EEF3;--fg2:#A897AC;--dim:#5F4E65;--line:#3A2E41}
+/* ---------- kırık beyaz zemin ---------- */
+:root{--bg:#E9E7E3;--bg2:#DCD8D3;--fg:#0E0E0E;--fg2:#837B80;--dim:#BCB4B7;--line:#D3CEC8}
 html,body{background:var(--bg);color:var(--fg)}
 #p-acil,#p-isler,#p-unutma,#p-fikir{background:var(--bg)}
-.dots i{background:var(--fg);opacity:.2} .dots i.on{opacity:1}
-.menu-btn svg{stroke:var(--fg)}
 .logo,#p-isler .logo,#p-unutma .logo,#p-fikir .logo{background:var(--bg2)}
-.title{color:var(--fg)} .title .w{color:var(--pink)} .title .g{color:var(--dim)} .title .o{color:var(--orange)}
+.title .w{color:#E59BCD} .title .g{color:var(--dim)} .title .o{color:var(--orange)}
 .sub{color:var(--fg2)} .today .sub{color:var(--fg)}
-.next{color:var(--fg)} .next small{color:var(--fg2)}
-.sq b{background:var(--fg)} .sq b.off{background:var(--line)}
+.sq b.off{background:var(--bg2)}
 .bar{background:var(--bg2)}
-.bar .fill{background:var(--pink)}
-.bar .mid{background:repeating-linear-gradient(90deg,#9A6F90 0 3px,#6F4F69 3px 7px)}
-.bar .hatch{background:repeating-linear-gradient(90deg,rgba(255,255,255,.16) 0 2px,transparent 2px 9px)}
+.bar .mid{background:repeating-linear-gradient(90deg,#D99BC6 0 3px,#EDC3DF 3px 7px)}
+.bar .hatch{background:repeating-linear-gradient(90deg,rgba(0,0,0,.14) 0 2px,transparent 2px 9px)}
 .nums span{color:var(--fg2)}
-.sec{color:var(--fg)} .sec span,.sec button{color:var(--fg2)}
-.empty{border-color:var(--line)} .empty span{color:var(--fg2)}
-.chip{background:var(--bg2);color:var(--fg)} .chip.on{background:var(--fg);color:var(--bg)}
+.sec span,.sec button{color:var(--fg2)}
+.empty{border-color:rgba(0,0,0,.14)} .empty span{color:var(--fg2)}
+.chip{background:var(--bg2)} .chip.on{background:var(--ink);color:#fff}
 .hint{color:var(--fg2)}
-.prog b{background:var(--fg)} .prog b.off{background:var(--line)}
+.prog b.off{background:var(--bg2)}
 .frow{border-bottom-color:var(--line)}
 .ftime.none,.ftime .mm{color:var(--dim)}
-.ftext small{color:var(--fg2)}
-.fcheck{border-color:var(--fg)} .fcheck svg{stroke:var(--bg)}
-.frow.done .fcheck{background:var(--fg)}
-.frow.done .ftext{color:var(--dim)}
-.oldbox{background:#2E1E28}
-.feat::after{background:#CDBFC7}
-#nav{background:#110C14;box-shadow:0 0 0 1px var(--line)}
-#nav button.on{background:var(--fg);color:var(--bg)}
-#nav button[data-p="0"].on{background:var(--pink);color:var(--ink)}
-#fab{background:var(--pink);color:var(--ink);box-shadow:0 10px 24px rgba(0,0,0,.5),0 0 0 5px rgba(29,22,33,.75)}
-#fab.orange{background:var(--orange)}
-#toast{background:var(--fg);color:var(--ink)} #toast button{background:var(--ink);color:#fff}
+.oldbox{background:#F3E2DA}
+.feat::after{background:#D6CFCA}
+#nav button.on{background:#fff;color:var(--ink)}
+#nav button[data-p="0"].on{background:var(--pink)}
+#fab{box-shadow:0 10px 24px rgba(0,0,0,.22),0 0 0 5px rgba(233,231,227,.85)}
+
+/* ---------- ana sayfa: unutma paneli ---------- */
+.hub-top{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin:0 0 10px}
+.mini-nums{display:flex;gap:16px;text-align:center}
+.mini-nums b{display:block;font-family:var(--disp);font-weight:900;font-size:30px;line-height:1.05}
+.mini-nums span{font-size:11.5px;letter-spacing:.04em;color:var(--fg2);font-weight:600}
+.bar.slim{height:16px;border-radius:8px;margin-bottom:18px}
+.bar.slim .fill{border-radius:8px;min-width:8px}
+.panel{background:#fff;border-radius:24px 0 24px 24px;padding:14px 16px 4px;position:relative;margin-bottom:6px;
+  clip-path:polygon(0 0,calc(100% - 34px) 0,100% 34px,100% 100%,0 100%)}
+.panel::after{content:"";position:absolute;top:0;right:0;width:34px;height:34px;background:#D6CFCA;clip-path:polygon(0 0,0 100%,100% 100%);border-bottom-left-radius:8px}
+.panel-h{display:flex;align-items:center;gap:8px;font-family:var(--disp);font-weight:900;text-transform:uppercase;font-size:22px;line-height:1.1;padding-right:26px;margin-bottom:2px}
+.panel-h i{font-style:normal;background:var(--orange);border-radius:8px;padding:3px 8px 2px;font-size:15px;line-height:1.1}
+.panel-h button{margin-left:auto;font-size:16px;color:var(--fg2);padding:6px 2px}
+.panel-sub{font-family:var(--disp);font-weight:800;text-transform:uppercase;font-size:13px;letter-spacing:.06em;color:var(--fg2);margin:10px 0 0}
+.panel .frow{padding:11px 0;gap:10px}
+.panel .frow:last-child{border-bottom:0}
+.panel .ftime{font-size:24px;min-width:58px}
+.panel .ftext{font-size:15.5px}
+.panel .fcheck{width:28px;height:28px}
+.panel .fcheck svg{width:13px;height:13px}
+.panel-empty{padding:14px 0 16px;color:var(--fg2);font-size:15px}
+.fday{display:block;font-family:var(--disp);font-weight:800;font-size:12.5px;line-height:1.2;letter-spacing:.05em;text-transform:uppercase;color:var(--orange);margin-bottom:2px}
+.fday.fut{color:var(--fg2)}
 .card,.feat,.idea,#sheet{color:var(--ink)}
 </style>
 </head>
@@ -460,32 +475,39 @@ function cardHTML(t){
 function renderHub(){
   const u = urgent();
   const today = dkey();
-  const fToday = S.forgets.filter(f => f.day === today);
+  const fToday = S.forgets.filter(f => f.day === today).sort((a,b) => (a.done - b.done) || ((a.time||"99") < (b.time||"99") ? -1 : 1));
+  const fOld = S.forgets.filter(f => f.day < today && !f.done).sort((a,b) => (a.day+(a.time||"")) < (b.day+(b.time||"")) ? -1 : 1);
+  const fFut = S.forgets.filter(f => f.day > today && !f.done).sort((a,b) => (a.day+(a.time||"")) < (b.day+(b.time||"")) ? -1 : 1);
   const fOpen = S.forgets.filter(f => !f.done && f.day <= today);
   const doneToday = S.tasks.filter(t => t.done && t.doneAt && dkey(new Date(t.doneAt)) === today).length + fToday.filter(f => f.done).length;
   const total = u.length + fOpen.length + doneToday;
   const pct = total ? Math.round(doneToday / total * 100) : 0;
-  const nextF = fOpen.filter(f => f.time).sort((a,b) => (a.day+a.time) < (b.day+b.time) ? -1 : 1)[0] || fOpen[0];
   const d = new Date();
-  const sq = Array.from({length:5}, (_, i) => `<b class="${i < Math.round(pct/20) ? "" : "off"}"></b>`).join("");
 
-  let h = `<div class="stats">
-    <div class="stats-head">
+  let h = `<div class="hub-top">
       <div class="sub">${esc(up(GUN[d.getDay()]))}<br>${d.getDate()} ${esc(up(AY[d.getMonth()]))}</div>
-      <div class="next" data-act="goto" data-p="2" style="cursor:pointer">${nextF
-        ? `<small>▸ Unutma</small>${nextF.time ? esc(nextF.time) + " · " : ""}${esc(nextF.text)}`
-        : total ? `<small>▸ Bugün</small>%${pct} tamam` : `<small>▸ Bugün</small>Temiz sayfa`}<br><span class="sq">${sq}</span></div>
+      <div class="mini-nums">
+        <div><b>${u.length}</b><span>ACİL</span></div>
+        <div><b>${fOpen.length}</b><span>UNUTMA</span></div>
+        <div><b>${doneToday}</b><span>BİTEN</span></div>
+      </div>
     </div>
-    <div class="bar"><div class="fill" style="width:${Math.max(pct, 4)}%"></div><div class="mid" style="width:${total ? Math.round(u.length/total*100*.6) : 0}%"></div><div class="hatch"></div></div>
-    <div class="nums">
-      <div><b>${u.length}</b><span>ACİL</span></div>
-      <div><b>${fOpen.length}</b><span>UNUTMA</span></div>
-      <div><b>${doneToday}</b><span>BİTEN</span></div>
-    </div>
-  </div>`;
+    <div class="bar slim"><div class="fill" style="width:${Math.max(pct, 3)}%"></div><div class="mid" style="width:${total ? Math.round(u.length/total*100*.6) : 0}%"></div><div class="hatch"></div></div>`;
 
+  // Unutma: hepsi, sınırsız
+  h += `<section class="panel"><div class="panel-h">Unutma <i>${fOpen.length}</i><button data-act="add-forget">+ Ekle</button></div>`;
+  if(!fToday.length && !fOld.length && !fFut.length){
+    h += `<div class="panel-empty">Bugün için not yok. + Ekle ile yaz.</div>`;
+  } else {
+    h += fOld.map(f => forgetRow(f, fLabel(f.day))).join("");
+    h += fToday.map(f => forgetRow(f)).join("");
+    if(fFut.length) h += `<div class="panel-sub">İleri tarihli</div>` + fFut.map(f => forgetRow(f, fLabel(f.day), true)).join("");
+  }
+  h += `</section>`;
+
+  h += `<div class="sec">Acil işler <span>${u.length}</span></div>`;
   if(!u.length){
-    h += `<div class="empty"><b>Acil iş yok.</b><span>İşler sekmesinde bir işin kırmızı ışığına bastığında burada toplanır.</span></div>`;
+    h += `<div class="empty"><b>Acil iş yok</b><span>İşler sekmesinde bir işin kırmızı ışığına bastığında burada toplanır.</span></div>`;
   } else {
     const f = u[0], dl = dayLabel(f.due);
     h += `<div class="feat"><div class="feat-in" data-act="edit-task" data-id="${f.id}">
@@ -499,7 +521,7 @@ function renderHub(){
       ${f.note ? `<div class="feat-note">${esc(f.note)}</div>` : ""}
     </div><button class="feat-go" data-act="done-task" data-id="${f.id}">Tamamladım ✓</button></div>`;
     if(u.length > 1){
-      h += `<div class="sec">Sıradaki acil <span>${u.length - 1}</span></div><div class="stack">${u.slice(1).map(cardHTML).join("")}</div>`;
+      h += `<div class="stack">${u.slice(1).map(cardHTML).join("")}</div>`;
     }
   }
   $("#hub").innerHTML = h;
@@ -524,14 +546,15 @@ function renderTasks(){
   $("#tasks").innerHTML = h;
 }
 
-function forgetRow(f){
+function forgetRow(f, lbl, fut){
   const now = new Date(), late = !f.done && f.time && (f.day < dkey() || (f.day === dkey() && f.time < `${pad(now.getHours())}:${pad(now.getMinutes())}`));
   return `<div class="frow ${f.done?"done":""} ${late?"late":""}">
     <div class="ftime ${f.time?"":"none"}">${f.time ? timeHTML(f.time) : "—"}</div>
-    <div class="ftext" data-act="edit-forget" data-id="${f.id}">${esc(f.text)}</div>
+    <div class="ftext" data-act="edit-forget" data-id="${f.id}">${lbl ? `<span class="fday ${fut?"fut":""}">${esc(lbl)}</span>` : ""}${esc(f.text)}</div>
     <button class="fcheck" data-act="done-forget" data-id="${f.id}" aria-label="Tamam">${CHECK}</button>
   </div>`;
 }
+const fLabel = k => { const dl = dayLabel(k); return /^\d/.test(dl[0]) ? dl[0] + " " + dl[1] : dl[0]; };
 function renderForgets(){
   const today = dkey(), d = new Date();
   const todays = S.forgets.filter(f => f.day === today).sort((a,b) => (a.done - b.done) || ((a.time||"99") < (b.time||"99") ? -1 : 1));
@@ -540,12 +563,10 @@ function renderForgets(){
   const doneN = todays.filter(f => f.done).length;
   let h = `<div class="today"><div class="sub">${d.getDate()} ${esc(up(AY[d.getMonth()]))} ${esc(up(GUN[d.getDay()]))}</div>
     <div class="prog">${todays.map(f => `<b class="${f.done?"":"off"}"></b>`).join("").slice(0, 2000)}</div></div>`;
-  if(old.length) h += `<div class="sec" style="margin-top:4px">Önceden kalan <span>${old.length}</span></div><div class="oldbox">${old.map(forgetRow).join("")}</div>`;
-  h += todays.length ? todays.map(forgetRow).join("")
+  if(old.length) h += `<div class="sec" style="margin-top:4px">Önceden kalan <span>${old.length}</span></div><div class="oldbox">${old.map(f => forgetRow(f, fLabel(f.day))).join("")}</div>`;
+  h += todays.length ? todays.map(f => forgetRow(f)).join("")
     : `<div class="empty" style="margin-top:6px"><b>Aklında ne var?</b><span>Sağ alttaki yuvarlak + ile gün içinde unutmaman gerekenleri hızlıca yaz.</span></div>`;
-  if(future.length) h += `<div class="sec">İleri tarihli <span>${future.length}</span></div>` + future.map(f => {
-    const dl = dayLabel(f.day); return forgetRow(f).replace('<div class="ftext"', `<div class="ftext" data-day="${esc(dl[0]+" "+dl[1])}"`).replace(/(<div class="ftext"[^>]*>)/, `$1<small style="margin:0 0 2px">${esc(dl[0])} ${esc(dl[1])}</small>`);
-  }).join("");
+  if(future.length) h += `<div class="sec">İleri tarihli <span>${future.length}</span></div>` + future.map(f => forgetRow(f, fLabel(f.day), true)).join("");
   if(doneN && todays.length) h += `<p class="hint" style="margin-top:14px">${doneN}/${todays.length} tamam. Biten maddeler ertesi gün kendiliğinden temizlenir.</p>`;
   $("#forgets").innerHTML = h;
 }
@@ -569,7 +590,7 @@ function render(){ renderHub(); renderTasks(); renderForgets(); renderIdeas(); }
 
 /* ============ sayfalar ============ */
 const pager = $("#pager");
-const PAGE_BG = ["#1D1621", "#1D1621", "#1D1621", "#1D1621"];
+const PAGE_BG = ["#E9E7E3", "#E9E7E3", "#E9E7E3", "#E9E7E3"];
 let cur = 0;
 function setPage(i){
   cur = i;
@@ -579,11 +600,14 @@ function setPage(i){
   $("#fab").classList.toggle("orange", i === 0);
   try { history.replaceState(null, "", "#" + ["acil","isler","unutma","fikirler"][i]); } catch(e){}
 }
-function goto(i, smooth = true){ pager.scrollTo({left: i * pager.clientWidth, behavior: smooth ? "smooth" : "auto"}); setPage(i); }
-let st;
-pager.addEventListener("scroll", () => { clearTimeout(st); st = setTimeout(() => {
-  const i = Math.round(pager.scrollLeft / pager.clientWidth); if(i !== cur) setPage(i); }, 60); }, {passive:true});
-window.addEventListener("resize", () => pager.scrollTo({left: cur * pager.clientWidth}));
+function goto(i){ document.querySelectorAll(".page").forEach(p => p.classList.toggle("active", +p.dataset.i === i)); setPage(i); }
+// yana kaydırarak sayfa değiştirme (yalnızca belirgin yatay hareketlerde)
+(() => { let sx = null, sy = 0, skip = false;
+  pager.addEventListener("touchstart", e => { const t = e.touches[0]; sx = t.clientX; sy = t.clientY; skip = !!e.target.closest(".chips,input,textarea"); }, {passive:true});
+  pager.addEventListener("touchend", e => { if(sx === null || skip) { sx = null; return; }
+    const t = e.changedTouches[0], dx = t.clientX - sx, dy = t.clientY - sy; sx = null;
+    if(Math.abs(dx) > 80 && Math.abs(dx) > Math.abs(dy) * 2.2){ const n = cur + (dx < 0 ? 1 : -1); if(n >= 0 && n <= 3) goto(n); } }, {passive:true});
+})();
 document.querySelectorAll("#nav button").forEach(b => b.addEventListener("click", () => goto(+b.dataset.p)));
 
 /* ============ toast ============ */
@@ -783,6 +807,7 @@ document.addEventListener("click", e => {
       S.tasks.push({id:uid(), title:i.text.slice(0, 140), cat:i.cat, pr:"yellow", due:"", time:"", note:"Fikirden", created:Date.now(), done:false});
       save(); render(); closeSheet(); S.prefs.cat = i.cat; renderTasks(); goto(1); toast("İş olarak eklendi", "", null, "var(--r-yel)"); return; }
     case "goto": goto(+el.dataset.p); return;
+    case "add-forget": forgetSheet(); return;
     case "menu": menuSheet(); return;
     case "close": closeSheet(); return;
     case "backup": backup(); return;
@@ -824,7 +849,7 @@ function housekeep(){
 housekeep();
 render();
 const startHash = ["acil","isler","unutma","fikirler"].indexOf((location.hash || "").slice(1));
-requestAnimationFrame(() => goto(Math.max(0, startHash), false));
+goto(Math.max(0, startHash));
 connectCloud();
 document.addEventListener("visibilitychange", () => { if(!document.hidden){ housekeep(); render(); } });
 setInterval(() => { if(!document.hidden) renderForgets(); }, 60000);
