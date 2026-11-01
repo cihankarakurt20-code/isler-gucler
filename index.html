@@ -313,7 +313,6 @@ textarea.field{min-height:84px;line-height:1.35}
 <script>
 "use strict";
 /* ============ sabitler ============ */
-const SHORTCUT = "İşler Güçler";
 const KEY = "islerGucler.v1";
 const CATS = {
   dergi:  {ad:"Dergi",   renk:"var(--pink)"},
@@ -332,7 +331,6 @@ const ICONS = {
   diger:'<svg viewBox="0 0 24 24" fill="none" stroke="#0E0E0E" stroke-width="2.2" stroke-linecap="round"><path d="M12 4v16M5 8l14 8M19 8L5 16"/></svg>'
 };
 const CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="#0E0E0E" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
-const BELL = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 16V11a6 6 0 0112 0v5l1.5 2h-15z"/><path d="M10 21h4"/></svg>';
 
 /* ============ yardımcılar ============ */
 const $ = s => document.querySelector(s);
@@ -356,7 +354,7 @@ function dayLabel(k){
 const shortDate = ts => { const d = new Date(ts); return `${d.getDate()} ${AY[d.getMonth()]}`; };
 
 /* ============ veri ============ */
-const blank = () => ({tasks:[], forgets:[], ideas:[], prefs:{rem:false, cat:"all", icat:"all"}, updatedAt:0, v:1});
+const blank = () => ({tasks:[], forgets:[], ideas:[], prefs:{cat:"all", icat:"all"}, updatedAt:0, v:1});
 let S = blank();
 try { const raw = localStorage.getItem(KEY); if(raw) S = Object.assign(blank(), JSON.parse(raw)); } catch(e){}
 S.prefs = Object.assign(blank().prefs, S.prefs || {});
@@ -498,7 +496,7 @@ function forgetRow(f){
   const now = new Date(), late = !f.done && f.time && (f.day < dkey() || (f.day === dkey() && f.time < `${pad(now.getHours())}:${pad(now.getMinutes())}`));
   return `<div class="frow ${f.done?"done":""} ${late?"late":""}">
     <div class="ftime ${f.time?"":"none"}">${f.time ? timeHTML(f.time) : "—"}</div>
-    <div class="ftext" data-act="edit-forget" data-id="${f.id}">${esc(f.text)}${f.sent ? `<small>${BELL} Anımsatıcılarda</small>` : ""}</div>
+    <div class="ftext" data-act="edit-forget" data-id="${f.id}">${esc(f.text)}</div>
     <button class="fcheck" data-act="done-forget" data-id="${f.id}" aria-label="Tamam">${CHECK}</button>
   </div>`;
 }
@@ -581,50 +579,13 @@ $("#scrim").addEventListener("click", closeSheet);
   sh.addEventListener("touchend", e => { if(y0 === null) return; const dy = e.changedTouches[0].clientY - y0; sh.style.transition = ""; sh.style.transform = ""; if(dy > 110) closeSheet(); y0 = null; });
 })();
 
-/* ============ Anımsatıcılar (Kestirmeler) ============ */
 function defaultReminderTime(){ const d = new Date(); d.setMinutes(0, 0, 0); d.setHours(d.getHours() + 1); return d; }
-function reminderURL(title, day, time){
-  let when;
-  if(day || time){ when = `${day || dkey()} ${time || "09:00"}`; }
-  else { const d = defaultReminderTime(); when = `${dkey(d)} ${pad(d.getHours())}:${pad(d.getMinutes())}`; }
-  const payload = JSON.stringify({baslik: title, tarih: when});
-  return {payload, url: `shortcuts://run-shortcut?name=${encodeURIComponent(SHORTCUT)}&input=text&text=${encodeURIComponent(payload)}`};
-}
-const inFrame = (() => { try { return window.self !== window.top; } catch(e){ return true; } })();
-function sendReminder(title, day, time){
-  const {payload, url} = reminderURL(title, day, time);
-  try { navigator.clipboard && navigator.clipboard.writeText(payload).catch(() => {}); } catch(e){}
-  if(!inFrame){ window.location.href = url; return; }
-  openSheet(`<h2 class="sh-title">Anımsatıcıya<br><span>gönder</span></h2>
-    <p class="note" style="margin-top:0"><b>${esc(title)}</b><br>${esc(JSON.parse(payload).tarih)}</p>
-    <a class="btn" href="${esc(url)}" target="_blank" rel="noopener">Kestirmeyi çalıştır</a>
-    <p class="note">Bilgiler panoya da kopyalandı. Düğme açılmazsa Kestirmeler'den <b>${esc(SHORTCUT)}</b> kestirmesini elle çalıştır; panodan okuyup ekler. Uygulamayı ana ekrandan açtığında bu adım kendiliğinden olur.</p>
-    <button class="btn ghost" data-act="close">Kapat</button>`);
-}
-
-function reminderGuide(){
-  openSheet(`<h2 class="sh-title">Anımsatıcı<br><span>bağlantısı</span></h2>
-  <p class="note" style="margin-top:0">İşler Güçler, Unutma maddelerini (ve istersen işleri) iPhone'daki <b>Anımsatıcılar</b>'a gönderebilir. Bunun için bir kerelik küçük bir kestirme kurman yeterli, 2 dakika sürer.</p>
-  <ol class="guide">
-    <li><b>Anımsatıcılar</b>'ı aç, <code>İşler Güçler</code> adında yeni bir liste oluştur.</li>
-    <li><b>Kestirmeler</b>'i aç, sağ üstteki <b>+</b> ile yeni kestirme oluştur. Adını tam olarak <code>${esc(SHORTCUT)}</code> koy.</li>
-    <li>Eylem ekle: <b>Girdiden Sözlüğü Al</b> (Get Dictionary from Input). Girdi olarak <b>Kestirme Girdisi</b> seçili kalsın.</li>
-    <li>Eylem ekle: <b>Sözlük Değerini Al</b>. Anahtar: <code>baslik</code></li>
-    <li>Bir <b>Sözlük Değerini Al</b> daha ekle, sözlük olarak 3. adımdaki <b>Sözlük</b>'ü seç. Anahtar: <code>tarih</code></li>
-    <li>Eylem ekle: <b>Yeni Anımsatıcı Ekle</b>. Başlık yerine 4. adımdaki değeri koy, listeyi <code>İşler Güçler</code> yap, <b>Uyarı</b>'yı aç ve tarih olarak 5. adımdaki değeri seç.</li>
-    <li>Kestirmenin ayarlarından (ⓘ) <b>Paylaşma Listesinde Göster</b>'i kapatabilirsin. <b>Girdi yoksa</b> seçeneğini <b>Panoyu Al</b> yap; böylece panodan da çalışır.</li>
-  </ol>
-  <p class="note">Sonra: Unutma'da yeni madde eklerken <b>Anımsatıcılara da ekle</b>'yi aç, ya da bir işin içinden <b>Anımsatıcıya gönder</b>'e bas. Saat seçmediysen bir saat sonrasına kurulur.</p>
-  <p class="note">Bağlantı tek yönlü: buradan Anımsatıcılar'a gider. Anımsatıcılar'da işaretlediğin bir şey buraya geri gelmez; tarayıcıdan çalışan uygulamalar Anımsatıcılar'ı okuyamaz.</p>
-  <button class="btn" data-act="test-rem">Deneme gönder</button>
-  <button class="btn ghost" data-act="close">Kapat</button>`);
-}
 
 /* ============ formlar ============ */
 function taskSheet(t){
   const isNew = !t;
   t = t || {id:null, title:"", cat: S.prefs.cat !== "all" ? S.prefs.cat : "dergi", pr: cur === 0 ? "red" : "yellow", due:"", time:"", note:""};
-  let st = {cat:t.cat, pr:t.pr, rem:false};
+  let st = {cat:t.cat, pr:t.pr};
   openSheet(`<h2 class="sh-title">${isNew ? "Yeni<br><span>iş</span>" : "İşi<br><span>düzenle</span>"}</h2>
     <textarea class="field" id="fTitle" rows="2" placeholder="Ne yapılacak?">${esc(t.title)}</textarea>
     <div class="lbl">Kutu</div>
@@ -635,7 +596,6 @@ function taskSheet(t){
     <div><div class="lbl">Saat</div><input class="field" type="time" id="fTime" value="${esc(t.time)}"></div></div>
     <div class="lbl">Not</div>
     <input class="field" id="fNote" placeholder="İsteğe bağlı" value="${esc(t.note)}">
-    <button class="toggle" id="fRem"><span class="sw"></span><span><b>Anımsatıcılara da ekle</b><small>Kaydedince iPhone Anımsatıcılar'a gönderir</small></span></button>
     <button class="btn" id="fSave">${isNew ? "Ekle" : "Kaydet"}</button>
     ${isNew ? "" : `<div class="btns2"><button class="btn alt" data-act="done-task" data-id="${t.id}">${t.done ? "Geri aç" : "Tamamla"}</button><button class="btn alt" data-act="del-task" data-id="${t.id}">Sil</button></div>`}
     <button class="btn ghost" data-act="close">Vazgeç</button>`, sh => {
@@ -643,7 +603,6 @@ function taskSheet(t){
     if(isNew) setTimeout(() => ti.focus(), 330);
     sh.querySelector("#fCat").onclick = e => { const b = e.target.closest(".opt"); if(!b) return; st.cat = b.dataset.v; sh.querySelectorAll("#fCat .opt").forEach(x => x.classList.toggle("on", x === b)); };
     sh.querySelector("#fPri").onclick = e => { const b = e.target.closest(".opt"); if(!b) return; st.pr = b.dataset.v; sh.querySelectorAll("#fPri .opt").forEach(x => x.classList.toggle("on", x === b)); };
-    sh.querySelector("#fRem").onclick = e => { st.rem = !st.rem; e.currentTarget.classList.toggle("on", st.rem); };
     sh.querySelector("#fSave").onclick = () => {
       const title = ti.value.trim(); if(!title){ ti.focus(); return; }
       const data = {title, cat:st.cat, pr:st.pr, due:sh.querySelector("#fDue").value, time:sh.querySelector("#fTime").value, note:sh.querySelector("#fNote").value.trim()};
@@ -653,7 +612,6 @@ function taskSheet(t){
       save(); render(); closeSheet();
       if(data.pr === "red" && !wasRed) toast("Acil Merkez'e gitti", cur !== 0 ? "Git" : "", () => goto(0));
       else toast(isNew ? "Eklendi" : "Kaydedildi", "", null, "var(--r-grn)");
-      if(st.rem) setTimeout(() => sendReminder(title, data.due, data.time), inFrame ? 380 : 0);
     };
   });
 }
@@ -661,7 +619,7 @@ function taskSheet(t){
 function forgetSheet(f){
   const isNew = !f;
   f = f || {id:null, text:"", time:"", day:dkey()};
-  const st = {time:f.time, rem: isNew ? !!S.prefs.rem : false};
+  const st = {time:f.time};
   const plus1 = defaultReminderTime(), p1 = `${pad(plus1.getHours())}:00`;
   const presets = [["", "Saatsiz"], [p1, "+1 saat"], ["12:30","12:30"], ["18:00","18:00"], ["21:00","21:00"]];
   openSheet(`<h2 class="sh-title">${isNew ? "Unutma<br><span>bunu</span>" : "Düzenle"}</h2>
@@ -671,25 +629,22 @@ function forgetSheet(f){
       <input class="field" type="time" id="uTime" value="${esc(f.time)}" style="width:auto;flex:1;min-width:120px;padding:9px 12px">
     </div>
     <div class="row" style="margin-top:4px"><div><div class="lbl">Gün</div><input class="field" type="date" id="uDay" value="${esc(f.day)}"></div></div>
-    <button class="toggle ${st.rem?"on":""}" id="uRem"><span class="sw"></span><span><b>Anımsatıcılara da ekle</b><small>iPhone'da saatinde bildirim gelsin</small></span></button>
     <button class="btn" id="uSave">${isNew ? "Kaydet" : "Kaydet"}</button>
-    ${isNew ? "" : `<div class="btns2"><button class="btn alt" data-act="rem-forget" data-id="${f.id}">Anımsatıcıya gönder</button><button class="btn alt" data-act="del-forget" data-id="${f.id}">Sil</button></div>`}
+    ${isNew ? "" : `<button class="btn alt" data-act="del-forget" data-id="${f.id}">Sil</button>`}
     <button class="btn ghost" data-act="close">Vazgeç</button>`, sh => {
     const inp = sh.querySelector("#uText"), ti = sh.querySelector("#uTime");
     if(isNew) setTimeout(() => inp.focus(), 330);
     const mark = () => sh.querySelectorAll("#uTimes .tchip").forEach(b => b.classList.toggle("on", b.dataset.v === st.time));
     sh.querySelector("#uTimes").onclick = e => { const b = e.target.closest(".tchip"); if(!b) return; st.time = b.dataset.v; ti.value = st.time; mark(); };
     ti.oninput = () => { st.time = ti.value; mark(); };
-    sh.querySelector("#uRem").onclick = e => { st.rem = !st.rem; e.currentTarget.classList.toggle("on", st.rem); };
     const doSave = () => {
       const text = inp.value.trim(); if(!text){ inp.focus(); return; }
       const day = sh.querySelector("#uDay").value || dkey();
       let item;
-      if(isNew){ item = {id:uid(), text, time:st.time, day, done:false, created:Date.now(), sent:st.rem}; S.forgets.push(item); S.prefs.rem = st.rem; }
-      else { item = S.forgets.find(z => z.id === f.id); Object.assign(item, {text, time:st.time, day}); if(st.rem) item.sent = true; }
+      if(isNew){ item = {id:uid(), text, time:st.time, day, done:false, created:Date.now()}; S.forgets.push(item); }
+      else { item = S.forgets.find(z => z.id === f.id); Object.assign(item, {text, time:st.time, day}); }
       save(); render(); closeSheet();
       toast("Not alındı", "", null, "var(--r-grn)");
-      if(st.rem) setTimeout(() => sendReminder(text, day, st.time), inFrame ? 380 : 0);
     };
     sh.querySelector("#uSave").onclick = doSave;
     inp.addEventListener("keydown", e => { if(e.key === "Enter"){ e.preventDefault(); doSave(); } });
@@ -723,7 +678,6 @@ function menuSheet(){
   const n = S.tasks.length + S.forgets.length + S.ideas.length;
   openSheet(`<h2 class="sh-title">İşler<br><span>Güçler</span></h2>
     <div class="menu-list">
-      <button data-act="guide">Anımsatıcılar <span>iPhone bağlantısını kur</span></button>
       <button data-act="backup">Yedek al <span>Tüm verileri dosya olarak kaydeder</span></button>
       <button data-act="restore">Yedekten yükle <span>Yedek dosyasını ya da metni geri yükler</span></button>
       <button data-act="clean">Bitenleri temizle <span>Tamamlanan işleri siler</span></button>
@@ -791,7 +745,6 @@ document.addEventListener("click", e => {
     case "done-forget": { const f = S.forgets.find(x => x.id === id); f.done = !f.done; f.doneAt = f.done ? Date.now() : null; save(); render(); return; }
     case "edit-forget": forgetSheet(S.forgets.find(x => x.id === id)); return;
     case "del-forget": removeWithUndo("forgets", id, "Silindi"); return;
-    case "rem-forget": { const f = S.forgets.find(x => x.id === id); f.sent = true; save(); render(); sendReminder(f.text, f.day, f.time); return; }
     case "edit-idea": ideaSheet(S.ideas.find(x => x.id === id)); return;
     case "del-idea": removeWithUndo("ideas", id, "Fikir silindi"); return;
     case "idea-task": { const i = S.ideas.find(x => x.id === id);
@@ -799,8 +752,6 @@ document.addEventListener("click", e => {
       save(); render(); closeSheet(); S.prefs.cat = i.cat; renderTasks(); goto(1); toast("İş olarak eklendi", "", null, "var(--r-yel)"); return; }
     case "goto": goto(+el.dataset.p); return;
     case "menu": menuSheet(); return;
-    case "guide": reminderGuide(); return;
-    case "test-rem": sendReminder("İşler Güçler deneme", "", ""); return;
     case "close": closeSheet(); return;
     case "backup": backup(); return;
     case "restore":
@@ -833,6 +784,7 @@ function housekeep(){
   const today = dkey(), monthAgo = Date.now() - 30*864e5;
   // tamamlanmış "unutma"lar ertesi gün temizlenir
   S.forgets = S.forgets.filter(f => !(f.done && f.day < today));
+  delete S.prefs.rem; S.forgets.forEach(f => { delete f.sent; });
   S.tasks = S.tasks.filter(t => !(t.done && t.doneAt && t.doneAt < monthAgo)); // 30 günden eski bitenler
 }
 
